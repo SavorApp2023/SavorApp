@@ -1,0 +1,28 @@
+{
+  "name": "Apple Cinnamon Sugar Treats",
+  "ingredients": [
+    {
+      "name": "Sugar",
+      "quantity": "1 cup"
+    },
+    {
+      "name": "Vanilla Extract",
+      "quantity": "1 teaspoon"
+    },
+    {
+      "name": "Cinnamon",
+      "quantity": "1 teaspoon"
+    },
+    {
+      "name": "Apple",
+      "quantity": "1 large"
+    }
+  ],
+  "steps": [
+    "Preheat oven to 350 degrees F (175 degrees C).",
+    "In a medium bowl, mix together the sugar, vanilla extract, and cinnamon.",
+    "Core the apple and cut into thin slices.",
+    "Dip the apple slices into the sugar mixture and place on a lightly greased baking sheet.",
+    "Bake in preheated oven for 10 to 15 minutes, or until golden brown."
+  ]
+}
