@@ -15,13 +15,10 @@ import torch
 import plotly.express as px
 import numpy as np
 
-with open("Google_API.txt", "r") as f:
-    google_key = f.read()
-
 
 def getImage(name):
 
-    gis = GoogleImagesSearch(google_key, "c1bf1c2491f384145")
+    gis = GoogleImagesSearch(st.secrets("google"), "c1bf1c2491f384145")
     gis.search({"q": name, "num": 1})
     result = gis.results()[0]
     img_url = result.url
