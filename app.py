@@ -18,7 +18,7 @@ import numpy as np
 
 def getImage(name):
 
-    gis = GoogleImagesSearch(st.secrets("google"), "c1bf1c2491f384145")
+    gis = GoogleImagesSearch(st.secrets["google"], "c1bf1c2491f384145")
     gis.search({"q": name, "num": 1})
     result = gis.results()[0]
     img_url = result.url
@@ -38,7 +38,7 @@ st.markdown(
     """
         <style>
             [data-testid="stSidebarNav"] {
-                background-repeat: no-repeat;                
+                background-repeat: no-repeat;
             }
             [data-testid="stSidebarNav"]::before {
                 content: "Savor";
@@ -52,6 +52,8 @@ st.markdown(
         </style>
         """,
     unsafe_allow_html=True,
+
+
 )
 
 

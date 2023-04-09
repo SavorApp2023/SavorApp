@@ -2,7 +2,7 @@ import openai
 import streamlit as st
 import json
 
-openai.api_key = st.secrets("openai")
+openai.api_key = st.secrets["openai"]
 
 
 def ask_gpt(prompt):
