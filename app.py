@@ -27,7 +27,7 @@ st.markdown(
 )
 aps = st.button("Go to app!")
 if aps:
-    switch_page("app")
+    switch_page("main")
 st.subheader("The story behind Savor")
 st.write(
     "Savor was born out of a desire to reduce food waste and help people make the most out of the ingredients they already have. As a team of food enthusiasts and tech lovers, we recognized that there was a need for a more accessible and user-friendly approach to cooking and meal planning. We wanted to create an app that could take the stress out of meal planning and make cooking easy for everyone. With a simple tap of a button, Savor generates dynamic, delicious recipes based on the ingredients you have on hand, taking into account nutritional value and dietary preferences. Whether you're a beginner cook or a seasoned pro, Savor has something for everyone, and its user-friendly interface makes cooking easy and fun."
