@@ -1,16 +1,44 @@
 import streamlit as st
 import pandas as pd
+import requests
+import urllib.request
+from PIL import Image
+from io import BytesIO
+from google_images_search import GoogleImagesSearch
+import requests
+from bs4 import BeautifulSoup
+import random
+import json
+import createRecipe
 from streamlit_extras.switch_page_button import switch_page
+import torch
+import plotly.express as px
+import numpy as np
 
-st.title("Savor")
-st.caption("Savor what you have, and you will have more of it.")
+
+def getImage(name):
+
+    gis = GoogleImagesSearch(st.secrets["google"], "c1bf1c2491f384145")
+    gis.search({"q": name, "num": 1})
+    result = gis.results()[0]
+    img_url = result.url
+    print(img_url)
+    return img_url
+
+
+def remove_duplicates(lst):
+    return list(set(lst))
+
+
+def list_to_string(lst):
+    return " ".join([str(i) for i in lst if str(i).isalnum()])
 
 
 st.markdown(
     """
         <style>
             [data-testid="stSidebarNav"] {
-                background-repeat: no-repeat;                
+                background-repeat: no-repeat;
             }
             [data-testid="stSidebarNav"]::before {
                 content: "Savor";
@@ -24,43 +52,118 @@ st.markdown(
         </style>
         """,
     unsafe_allow_html=True,
-)
-aps = st.button("Go to app!")
-if aps:
-    switch_page("app")
-st.subheader("The story behind Savor")
-st.write(
-    "Savor was born out of a desire to reduce food waste and help people make the most out of the ingredients they already have. As a team of food enthusiasts and tech lovers, we recognized that there was a need for a more accessible and user-friendly approach to cooking and meal planning. We wanted to create an app that could take the stress out of meal planning and make cooking easy for everyone. With a simple tap of a button, Savor generates dynamic, delicious recipes based on the ingredients you have on hand, taking into account nutritional value and dietary preferences. Whether you're a beginner cook or a seasoned pro, Savor has something for everyone, and its user-friendly interface makes cooking easy and fun."
+
+
 )
 
 
-st.image("number1.png")
+st.title("Savor")
+st.caption("Use what you have, and you will have more to savor.")
+ings = st.text_input(
+    "Input the ingredients that you have avaliable in your fridge! Also input your dietary restrictions, if any exist."
+)
+if st.button("Generate Recipes"):
+    recipes = createRecipe.write_prompt(ings)
+    st.subheader("Recipes")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        fd = recipes["recipes"][0]["name"]
+        st.header(fd)
+        st.image(getImage(fd), width=200)
+    with col2:
+        fd = recipes["recipes"][1]["name"]
+        st.header(fd)
+        st.image(getImage(fd), width=200)
+    with col3:
+        fd = recipes["recipes"][2]["name"]
+        st.header(fd)
+        st.image(getImage(fd), width=200)
+    with st.expander("Recipe 1"):
+        st.subheader(recipes["recipes"][0]["name"])
+        st.write("## Ingredients")
+        for ing in recipes["recipes"][0]["ingredients"]:
+            st.write(f"- {ing['name']}: {ing['quantity']}")
+        st.write("## Steps")
+        for i, step in enumerate(recipes["recipes"][0]["steps"]):
+            st.write(f"{i+1}. {step}")
+    with st.expander("Recipe 2"):
+        st.subheader(recipes["recipes"][1]["name"])
+        st.write("## Ingredients")
+        for ing in recipes["recipes"][1]["ingredients"]:
+            st.write(f"- {ing['name']}: {ing['quantity']}")
+        st.write("## Steps")
+        for i, step in enumerate(recipes["recipes"][1]["steps"]):
+            st.write(f"{i+1}. {step}")
+    with st.expander("Recipe 3"):
+        st.subheader(recipes["recipes"][2]["name"])
+        st.write("## Ingredients")
+        for ing in recipes["recipes"][2]["ingredients"]:
+            st.write(f"- {ing['name']}: {ing['quantity']}")
+        st.write("## Steps")
+        for i, step in enumerate(recipes["recipes"][2]["steps"]):
+            st.write(f"{i+1}. {step}")
 
-col1, col2 = st.columns(2)
 
-with col1:
-    st.subheader("What is Savor?")
-    st.write(
-        "Savor is an innovative solution to the way people approach cooking and food preparation. Its AI-generated recipes allow users to make the most out of the ingredients they already have in their fridge, reducing food waste and making healthy, nutritious meals more accessible and affordable. Frequently, people order takeout from outside or spend a lot of money on excess groceries because they are unsure what to cook with the ingredients they already have at home. Savor solves this problem by providing users with a variety of recipes that are tailored to their specific dietary preferences and nutritional needs, while **only using the ingredients they already have lying in their fridge**. By using Savor, you'll never be at a loss for what to make for dinner again, and you'll be making a positive impact on the world by reducing food waste and helping address the issue of world hunger."
-    )
-with col2:
-    st.image("chef.png")
+image = st.file_uploader(
+    "Upload an Image of your fridge (Experimental)",
+    type=["jpg", "jpeg", "png", "webp"],
+    accept_multiple_files=False,
+)
 
-with col1:
-    st.subheader("How it works")
-    st.write(
-        "Savor prioritizes a simplistic interface. The front-end is powered by Streamlit and is beautiful, responsive, and clean. Users have the option to list the ingredients they have on hand and their dietary restrictions in plain text, or simply upload a photo of their fridge. Savor uses a combination of computer vision through YOLOv5 and natural language processing through OpenAI's powerful gpt-3.5-turbo algorithm to identify the ingredients present in the photo and generate recipes based on the user's preferences."
-    )
-with col2:
-    st.image("Screenshot_26.png")
+if image:
+    try:
+        image = Image.open(image)
+        model = torch.hub.load("ultralytics/yolov5", "custom", "yolov5l.pt")
+        results = model(image, size=640)
+        fig = px.imshow(np.squeeze(results.render()), aspect="equal")
 
-
-with col1:
-    st.subheader("Inspiration")
-    st.write(
-        "Our inspiration for Savor came from our own experiences as home cooks. We often found ourselves staring blankly at the contents of our fridges, wondering what to make for dinner. We also recognized the issue of food waste, hunger and how much perfectly good food was being thrown away because people didn't know what to do with it. We wanted to create an app that could help solve both of these problems."
-    )
-
-
-with col2:
-    st.image("hunger.jpg")
+        # st.text(results.pandas().xyxy)
+        name = results.pandas().xyxy[0]["name"].tolist()
+        name = remove_duplicates(name)
+        st.text(name)
+        confidence = round(
+            (results.pandas().xyxy[0]["confidence"].unique()[0] * 100), 2
+        )
+        name = list_to_string(name)
+        recipes = createRecipe.write_prompt(name)
+        st.subheader("Recipes")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            fd = recipes["recipes"][0]["name"]
+            st.header(fd)
+            st.image(getImage(fd), width=200)
+        with col2:
+            fd = recipes["recipes"][1]["name"]
+            st.header(fd)
+            st.image(getImage(fd), width=200)
+        with col3:
+            fd = recipes["recipes"][2]["name"]
+            st.header(fd)
+            st.image(getImage(fd), width=200)
+        with st.expander("Recipe 1"):
+            st.subheader(recipes["recipes"][0]["name"])
+            st.write("## Ingredients")
+            for ing in recipes["recipes"][0]["ingredients"]:
+                st.write(f"- {ing['name']}: {ing['quantity']}")
+            st.write("## Steps")
+            for i, step in enumerate(recipes["recipes"][0]["steps"]):
+                st.write(f"{i+1}. {step}")
+        with st.expander("Recipe 2"):
+            st.subheader(recipes["recipes"][1]["name"])
+            st.write("## Ingredients")
+            for ing in recipes["recipes"][1]["ingredients"]:
+                st.write(f"- {ing['name']}: {ing['quantity']}")
+            st.write("## Steps")
+            for i, step in enumerate(recipes["recipes"][1]["steps"]):
+                st.write(f"{i+1}. {step}")
+        with st.expander("Recipe 3"):
+            st.subheader(recipes["recipes"][2]["name"])
+            st.write("## Ingredients")
+            for ing in recipes["recipes"][2]["ingredients"]:
+                st.write(f"- {ing['name']}: {ing['quantity']}")
+            st.write("## Steps")
+            for i, step in enumerate(recipes["recipes"][2]["steps"]):
+                st.write(f"{i+1}. {step}")
+    except Exception as e:
+        print(e)
+        st.text("No food detected.")
