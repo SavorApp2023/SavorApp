@@ -1,0 +1,11 @@
+streamlit
+Google-Images-Search
+openai
+pandas
+requests
+Pillow
+bs4
+streamlit-extras
+numpy
+torch
+plotly-express
