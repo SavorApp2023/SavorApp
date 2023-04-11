@@ -4,6 +4,7 @@ from streamlit_extras.switch_page_button import switch_page
 
 st.title("Savor")
 st.caption("Savor what you have, and you will have more of it.")
+st.write("**Github repository**: https://github.com/SavorApp2023/SavorApp")
 
 
 st.markdown(
